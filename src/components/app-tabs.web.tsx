@@ -1,3 +1,4 @@
+import type { Href } from 'expo-router';
 import {
   Tabs,
   TabList,
@@ -15,13 +16,20 @@ import { ThemedView } from './themed-view';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 
+/**
+ * The tab group's index route. `typedRoutes` regenerates its href union on every dev
+ * server start and doesn't consistently include the bare `/` form, but `/` is what
+ * actually resolves at runtime — `/index` 404s and `/(tabs)/index` renders no href.
+ */
+const HOME_HREF = '/' as Href;
+
 export default function AppTabs() {
   return (
     <Tabs>
       <TabSlot style={{ height: '100%' }} />
       <TabList asChild>
         <CustomTabList>
-          <TabTrigger name="home" href="/" asChild>
+          <TabTrigger name="home" href={HOME_HREF} asChild>
             <TabButton>Home</TabButton>
           </TabTrigger>
           <TabTrigger name="explore" href="/explore" asChild>

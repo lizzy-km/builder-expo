@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 
+import { cloneSubtree, extractSubtree, nextOrderIn } from '@/lib/block-clone';
 import {
   childrenOf,
   moveWithinParent,
@@ -14,7 +15,13 @@ import {
 import { sortByOrder } from '@/lib/reorder';
 import { createWidgetBlock } from '@/lib/widget-defaults';
 import { DEFAULT_ANIMATION, type AnimationProps } from '@/types/animation';
-import type { StyleProps, WidgetBlock, WidgetPropsPatch, WidgetType } from '@/types/builder';
+import type {
+  BlockAttributes,
+  StyleProps,
+  WidgetBlock,
+  WidgetPropsPatch,
+  WidgetType,
+} from '@/types/builder';
 
 type BuilderState = {
   pageId: string | null;
@@ -36,6 +43,11 @@ type BuilderActions = {
   updateWidgetProps: (id: string, props: WidgetPropsPatch) => void;
   updateWidgetStyle: (id: string, style: Partial<StyleProps>) => void;
   updateWidgetAnimation: (id: string, animation: Partial<AnimationProps>) => void;
+  updateWidgetAttributes: (id: string, attributes: Partial<BlockAttributes>) => void;
+  /** Duplicate a block and its children as a new sibling. */
+  duplicateWidget: (id: string) => void;
+  /** Insert a saved sub template's blocks at the top level. */
+  insertBlocks: (blocks: WidgetBlock[], parentId?: string | null) => void;
   markSaved: () => void;
 };
 
@@ -121,6 +133,48 @@ export const useBuilderStore = create<BuilderState & BuilderActions>((set) => ({
       ),
       isDirty: true,
     })),
+
+  updateWidgetAttributes: (id, attributes) =>
+    set((state) => ({
+      blocks: state.blocks.map((block) =>
+        block.id === id
+          ? { ...block, attributes: { ...block.attributes, ...attributes } }
+          : block,
+      ),
+      isDirty: true,
+    })),
+
+  duplicateWidget: (id) =>
+    set((state) => {
+      const source = state.blocks.find((block) => block.id === id);
+      if (!source) return state;
+
+      const subtree = extractSubtree(state.blocks, id);
+      const copies = cloneSubtree(
+        subtree,
+        id,
+        source.parentId,
+        nextOrderIn(state.blocks, source.parentId),
+      );
+      return {
+        blocks: normalizeSiblingOrder([...state.blocks, ...copies]),
+        selectedId: copies.find((block) => block.parentId === source.parentId)?.id ?? null,
+        isDirty: true,
+      };
+    }),
+
+  insertBlocks: (blocks, parentId = null) =>
+    set((state) => {
+      const root = blocks.find((block) => block.parentId === null);
+      if (!root) return state;
+
+      const copies = cloneSubtree(blocks, root.id, parentId, nextOrderIn(state.blocks, parentId));
+      return {
+        blocks: normalizeSiblingOrder([...state.blocks, ...copies]),
+        selectedId: copies.find((block) => block.parentId === parentId)?.id ?? null,
+        isDirty: true,
+      };
+    }),
 
   markSaved: () => set({ isDirty: false }),
 }));

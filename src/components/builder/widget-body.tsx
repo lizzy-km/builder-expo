@@ -5,6 +5,13 @@ import { CardWidget } from '@/components/builder/widgets/card-widget';
 import { ContainerWidget } from '@/components/builder/widgets/container-widget';
 import { CountdownWidget } from '@/components/builder/widgets/countdown-widget';
 import { EmbedWidget } from '@/components/builder/widgets/embed-widget';
+import {
+  EndDateWidget,
+  EndHourWidget,
+  RegisterWidget,
+  SubmitEntryWidget,
+  TimeZoneWidget,
+} from '@/components/builder/widgets/event-widgets';
 import { GridWidget } from '@/components/builder/widgets/grid-widget';
 import { IconWidget } from '@/components/builder/widgets/icon-widget';
 import { ImageWidget } from '@/components/builder/widgets/image-widget';
@@ -19,14 +26,19 @@ import type {
   ContainerWidgetProps,
   CountdownWidgetProps,
   EmbedWidgetProps,
+  EndDateWidgetProps,
+  EndHourWidgetProps,
   GridWidgetProps,
   IconWidgetProps,
   ImageWidgetProps,
   NavbarWidgetProps,
   PersonalCardWidgetProps,
+  RegisterWidgetProps,
   SeparatorWidgetProps,
+  SubmitEntryWidgetProps,
   TableWidgetProps,
   TextWidgetProps,
+  TimeZoneWidgetProps,
   WidgetBlock,
 } from '@/types/builder';
 
@@ -67,6 +79,16 @@ export function WidgetBody({ block, children }: WidgetBodyProps) {
       return <CardWidget {...(block.props as CardWidgetProps)} />;
     case 'personalCard':
       return <PersonalCardWidget {...(block.props as PersonalCardWidgetProps)} />;
+    case 'submitEntry':
+      return <SubmitEntryWidget {...(block.props as SubmitEntryWidgetProps)} />;
+    case 'register':
+      return <RegisterWidget {...(block.props as RegisterWidgetProps)} />;
+    case 'endDate':
+      return <EndDateWidget {...(block.props as EndDateWidgetProps)} />;
+    case 'endHour':
+      return <EndHourWidget {...(block.props as EndHourWidgetProps)} />;
+    case 'timeZone':
+      return <TimeZoneWidget {...(block.props as TimeZoneWidgetProps)} />;
     default:
       return null;
   }

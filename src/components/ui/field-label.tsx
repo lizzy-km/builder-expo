@@ -4,16 +4,24 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type FieldLabelProps = ViewProps & {
-  label: string;
+  /** Omit to render just the control, with no label row. */
+  label?: string;
+  /** Short helper text under the label, for units or accepted formats. */
+  hint?: string;
 };
 
-/** Vertical label + control wrapper shared by every property-panel field. */
-export function FieldLabel({ label, children, style, ...rest }: FieldLabelProps) {
+/** Label + control wrapper shared by every property-panel field. */
+export function FieldLabel({ label, hint, children, style, ...rest }: FieldLabelProps) {
   const theme = useTheme();
 
   return (
     <View style={[styles.field, style]} {...rest}>
-      <Text style={[styles.label, { color: theme.textSecondary }]}>{label}</Text>
+      {label ? (
+        <View style={styles.labelRow}>
+          <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
+          {hint ? <Text style={[styles.hint, { color: theme.textSecondary }]}>{hint}</Text> : null}
+        </View>
+      ) : null}
       {children}
     </View>
   );
@@ -21,12 +29,23 @@ export function FieldLabel({ label, children, style, ...rest }: FieldLabelProps)
 
 const styles = StyleSheet.create({
   field: {
-    gap: Spacing.one,
-    flex: 1,
+    gap: Spacing.two,
+    /** Fills its row when siblings share one, but doesn't force width otherwise. */
+    flexShrink: 1,
+    flexGrow: 1,
+    flexBasis: 'auto',
+  },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
   },
   label: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
-    textTransform: 'uppercase',
+  },
+  hint: {
+    fontSize: 11,
   },
 });

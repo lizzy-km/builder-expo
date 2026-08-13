@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton } from '@/components/ui/app-button';
 import { Spacing } from '@/constants/theme';
@@ -14,6 +14,7 @@ export type BuilderToolbarProps = {
   onDeleteSelected: () => void;
   onReplayAnimations: () => void;
   onTogglePublished: () => void;
+  onBack: () => void;
 };
 
 export function BuilderToolbar({
@@ -26,11 +27,21 @@ export function BuilderToolbar({
   onDeleteSelected,
   onReplayAnimations,
   onTogglePublished,
+  onBack,
 }: BuilderToolbarProps) {
   const theme = useTheme();
 
   return (
     <View style={[styles.bar, { borderBottomColor: theme.border }]}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Back to pages"
+        onPress={onBack}
+        style={styles.back}
+      >
+        <Text style={[styles.backText, { color: theme.primary }]}>‹</Text>
+      </Pressable>
+
       <View style={styles.titleGroup}>
         <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
           {title}
@@ -82,6 +93,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     borderBottomWidth: 1,
+  },
+  back: {
+    paddingRight: Spacing.two,
+    paddingVertical: Spacing.one,
+  },
+  backText: {
+    fontSize: 28,
+    lineHeight: 30,
+    fontWeight: '700',
   },
   titleGroup: {
     flex: 1,

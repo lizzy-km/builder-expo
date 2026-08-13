@@ -50,6 +50,22 @@ const DEFAULT_PROPS: { [K in WidgetType]: () => WidgetPropsByType[K] } = {
     role: 'Founder',
     bio: 'Short bio goes here.',
   }),
+  submitEntry: () => ({
+    label: 'Submit entry',
+    successMessage: 'Thanks — your entry is in!',
+  }),
+  register: () => ({ label: 'Register now', href: '' }),
+  endDate: () => ({
+    endsAt: Date.now() + DEFAULT_COUNTDOWN_OFFSET_MS,
+    caption: 'Entries close',
+    dateStyle: 'medium',
+  }),
+  endHour: () => ({
+    endsAt: Date.now() + DEFAULT_COUNTDOWN_OFFSET_MS,
+    caption: 'Closing time',
+    use24Hour: false,
+  }),
+  timeZone: () => ({ timeZone: '', caption: 'Times shown in', showOffset: true }),
 };
 
 /** Human-facing labels for the palette. */
@@ -67,6 +83,11 @@ export const WIDGET_LABELS: Record<WidgetType, string> = {
   navbar: 'Navbar',
   card: 'Card',
   personalCard: 'Profile',
+  submitEntry: 'Submit Entry Button',
+  register: 'Register Button',
+  endDate: 'End date',
+  endHour: 'End hour',
+  timeZone: 'Time zone',
 };
 
 export const WIDGET_TYPES = Object.keys(WIDGET_LABELS) as WidgetType[];

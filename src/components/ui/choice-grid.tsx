@@ -5,7 +5,8 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ChoiceGridProps<T extends string> = {
-  label: string;
+  /** Omit when the enclosing card already names the control. */
+  label?: string;
   value: T;
   options: { value: T; label: string }[];
   onChange: (value: T) => void;

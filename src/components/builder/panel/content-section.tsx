@@ -4,6 +4,13 @@ import { CardEditor } from '@/components/builder/panel/editors/card-editor';
 import { ContainerEditor } from '@/components/builder/panel/editors/container-editor';
 import { CountdownEditor } from '@/components/builder/panel/editors/countdown-editor';
 import { EmbedEditor } from '@/components/builder/panel/editors/embed-editor';
+import {
+  EndDateEditor,
+  EndHourEditor,
+  RegisterEditor,
+  SubmitEntryEditor,
+  TimeZoneEditor,
+} from '@/components/builder/panel/editors/event-editors';
 import { GridEditor } from '@/components/builder/panel/editors/grid-editor';
 import { IconEditor } from '@/components/builder/panel/editors/icon-editor';
 import { ImageEditor } from '@/components/builder/panel/editors/image-editor';
@@ -20,12 +27,17 @@ import type {
   EmbedWidgetProps,
   GridWidgetProps,
   IconWidgetProps,
+  EndDateWidgetProps,
+  EndHourWidgetProps,
   ImageWidgetProps,
   NavbarWidgetProps,
   PersonalCardWidgetProps,
+  RegisterWidgetProps,
   SeparatorWidgetProps,
+  SubmitEntryWidgetProps,
   TableWidgetProps,
   TextWidgetProps,
+  TimeZoneWidgetProps,
   WidgetBlock,
   WidgetPropsPatch,
 } from '@/types/builder';
@@ -37,7 +49,7 @@ export type ContentSectionProps = {
 };
 
 /** Chooses the content editor matching the selected block's widget type. */
-function ContentEditor({ block, onChange }: ContentSectionProps) {
+export function WidgetContentEditor({ block, onChange }: ContentSectionProps) {
   switch (block.type) {
     case 'text':
       return <TextEditor props={block.props as TextWidgetProps} onChange={onChange} />;
@@ -67,6 +79,16 @@ function ContentEditor({ block, onChange }: ContentSectionProps) {
       return (
         <PersonalCardEditor props={block.props as PersonalCardWidgetProps} onChange={onChange} />
       );
+    case 'submitEntry':
+      return <SubmitEntryEditor props={block.props as SubmitEntryWidgetProps} onChange={onChange} />;
+    case 'register':
+      return <RegisterEditor props={block.props as RegisterWidgetProps} onChange={onChange} />;
+    case 'endDate':
+      return <EndDateEditor props={block.props as EndDateWidgetProps} onChange={onChange} />;
+    case 'endHour':
+      return <EndHourEditor props={block.props as EndHourWidgetProps} onChange={onChange} />;
+    case 'timeZone':
+      return <TimeZoneEditor props={block.props as TimeZoneWidgetProps} onChange={onChange} />;
     default:
       return null;
   }
@@ -75,7 +97,7 @@ function ContentEditor({ block, onChange }: ContentSectionProps) {
 export function ContentSection({ block, onChange }: ContentSectionProps) {
   return (
     <PanelSection title="Content">
-      <ContentEditor block={block} onChange={onChange} />
+      <WidgetContentEditor block={block} onChange={onChange} />
     </PanelSection>
   );
 }

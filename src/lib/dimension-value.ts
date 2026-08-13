@@ -31,6 +31,28 @@ export function parseDimension(text: string): DimensionValue | undefined | null 
   return pixels;
 }
 
+/** A dimension split into the parts the editor's number + unit controls each own. */
+export type DimensionParts = {
+  amount: string;
+  unit: 'px' | '%' | 'auto';
+};
+
+/** Split a stored dimension for editing. Undefined reads as `auto`. */
+export function splitDimension(value: DimensionValue | undefined): DimensionParts {
+  if (value === undefined) return { amount: '', unit: 'auto' };
+  if (typeof value === 'number') return { amount: String(value), unit: 'px' };
+  return { amount: value.slice(0, -1), unit: '%' };
+}
+
+/** Rebuild a dimension from editor parts; `auto` and blank amounts clear the value. */
+export function joinDimension({ amount, unit }: DimensionParts): DimensionValue | undefined {
+  if (unit === 'auto') return undefined;
+
+  const parsed = Number(amount.trim());
+  if (!amount.trim() || !Number.isFinite(parsed)) return undefined;
+  return unit === '%' ? `${parsed}%` : parsed;
+}
+
 /** Parse plain numeric input (spacing, radius, gap). Blank clears the value. */
 export function parseNumber(text: string): number | undefined | null {
   const trimmed = text.trim();

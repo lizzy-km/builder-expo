@@ -87,3 +87,45 @@ export type PersonalCardWidgetProps = {
   avatarUri?: string;
   backgroundColor?: string;
 };
+
+/* ---------- Event widgets ---------- */
+
+/** Submits the visitor's entry to the event this page advertises. */
+export type SubmitEntryWidgetProps = {
+  label: string;
+  successMessage: string;
+  backgroundColor?: string;
+  textColor?: string;
+};
+
+/** Opens registration for the event. */
+export type RegisterWidgetProps = {
+  label: string;
+  href?: string;
+  backgroundColor?: string;
+  textColor?: string;
+};
+
+/** Displays the event's closing date. */
+export type EndDateWidgetProps = {
+  /** Epoch milliseconds for the event's end. */
+  endsAt: number;
+  caption: string;
+  /** Intl date style used to render `endsAt`. */
+  dateStyle: 'short' | 'medium' | 'long';
+};
+
+/** Displays the event's closing time of day. */
+export type EndHourWidgetProps = {
+  endsAt: number;
+  caption: string;
+  use24Hour: boolean;
+};
+
+/** Names the timezone the event's times are quoted in. */
+export type TimeZoneWidgetProps = {
+  /** IANA name, e.g. `Asia/Colombo`. Blank uses the viewer's own zone. */
+  timeZone: string;
+  caption: string;
+  showOffset: boolean;
+};

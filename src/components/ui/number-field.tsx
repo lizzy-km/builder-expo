@@ -4,14 +4,22 @@ import { TextField } from '@/components/ui/text-field';
 import { parseNumber } from '@/lib/dimension-value';
 
 export type NumberFieldProps = {
-  label: string;
+  /** Omit when the enclosing card already names the control. */
+  label?: string;
   value: number | undefined;
   onChange: (value: number | undefined) => void;
   placeholder?: string;
+  hint?: string;
 };
 
 /** Plain numeric input for spacing, radius, and gap values. */
-export function NumberField({ label, value, onChange, placeholder = '0' }: NumberFieldProps) {
+export function NumberField({
+  label,
+  value,
+  onChange,
+  placeholder = '0',
+  hint = 'px',
+}: NumberFieldProps) {
   const [draft, setDraft] = useState(() => (value === undefined ? '' : String(value)));
 
   useEffect(() => {
@@ -27,6 +35,7 @@ export function NumberField({ label, value, onChange, placeholder = '0' }: Numbe
   return (
     <TextField
       label={label}
+      hint={hint}
       value={draft}
       onChangeText={handleChange}
       placeholder={placeholder}

@@ -21,6 +21,12 @@ export const Colors = {
     border: '#D8DAE0',
     danger: '#D64545',
     overlay: 'rgba(0,0,0,0.4)',
+    /** Editor chrome: panel surfaces and the tinted cards each control group sits in. */
+    panelSurface: '#F4F6F4',
+    panelRail: '#E8EBE8',
+    fieldCard: '#E3EFE4',
+    fieldCardBorder: '#C7DFC9',
+    fieldInput: '#FFFFFF',
   },
   dark: {
     text: '#ffffff',
@@ -35,6 +41,12 @@ export const Colors = {
     border: '#33363B',
     danger: '#E57373',
     overlay: 'rgba(0,0,0,0.6)',
+    /** Editor chrome: dark panel with the reference's green-tinted field cards. */
+    panelSurface: '#2A2E2B',
+    panelRail: '#1F2320',
+    fieldCard: '#3E5A42',
+    fieldCardBorder: '#4A6B4F',
+    fieldInput: '#2F4433',
   },
 } as const;
 

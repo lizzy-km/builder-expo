@@ -16,7 +16,10 @@ export type PreviewBlocksProps = {
  * drag handles, selection borders, or press targets.
  */
 export function PreviewBlocks({ blocks, parentId }: PreviewBlocksProps) {
-  return childrenOf(blocks, parentId).map((block) => (
+  // Blocks marked hidden are omitted entirely from the published page.
+  const visible = childrenOf(blocks, parentId).filter((block) => !block.attributes?.hidden);
+
+  return visible.map((block) => (
     <View key={block.id} style={block.style}>
       <AnimatedBlock animation={block.animation}>
         <WidgetBody block={block}>

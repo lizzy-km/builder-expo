@@ -10,7 +10,7 @@ export type SegmentedOption<T extends string> = {
 };
 
 export type SegmentedFieldProps<T extends string> = {
-  label: string;
+  label?: string;
   value: T;
   options: SegmentedOption<T>[];
   onChange: (value: T) => void;
@@ -27,7 +27,12 @@ export function SegmentedField<T extends string>({
 
   return (
     <FieldLabel label={label}>
-      <View style={[styles.group, { borderColor: theme.border }]}>
+      <View
+        style={[
+          styles.group,
+          { borderColor: theme.border, backgroundColor: theme.background },
+        ]}
+      >
         {options.map((option) => {
           const isActive = option.value === value;
           return (
@@ -36,9 +41,10 @@ export function SegmentedField<T extends string>({
               accessibilityRole="button"
               accessibilityState={{ selected: isActive }}
               onPress={() => onChange(option.value)}
-              style={[
+              style={({ pressed }) => [
                 styles.segment,
                 { backgroundColor: isActive ? theme.primary : 'transparent' },
+                pressed && !isActive && styles.pressed,
               ]}
             >
               <Text
@@ -70,9 +76,15 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.one,
     alignItems: 'center',
+    justifyContent: 'center',
+    /** Matches the text inputs so mixed rows line up. */
+    minHeight: 38,
   },
   segmentLabel: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  pressed: {
+    opacity: 0.6,
   },
 });

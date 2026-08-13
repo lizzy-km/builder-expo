@@ -7,7 +7,8 @@ import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ColorFieldProps = {
-  label: string;
+  /** Omit when the enclosing card already names the control. */
+  label?: string;
   value: string | undefined;
   onChange: (value: string | undefined) => void;
 };
@@ -56,7 +57,10 @@ export function ColorField({ label, value, onChange }: ColorFieldProps) {
           placeholderTextColor={theme.textSecondary}
           autoCapitalize="none"
           autoCorrect={false}
-          style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+          style={[
+            styles.input,
+            { color: theme.text, borderColor: theme.border, backgroundColor: theme.background },
+          ]}
         />
       </View>
 
@@ -65,7 +69,7 @@ export function ColorField({ label, value, onChange }: ColorFieldProps) {
           <Pressable
             key={color}
             accessibilityRole="button"
-            accessibilityLabel={`Set ${label} to ${color}`}
+            accessibilityLabel={label ? `Set ${label} to ${color}` : `Use color ${color}`}
             onPress={() => selectSwatch(color)}
             style={[
               styles.swatch,
@@ -86,29 +90,30 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   preview: {
-    width: 28,
-    height: 28,
-    borderRadius: Spacing.one,
+    width: 40,
+    height: 40,
+    borderRadius: Spacing.two,
     borderWidth: 1,
   },
   input: {
     flex: 1,
     borderWidth: 1,
     borderRadius: Spacing.two,
-    paddingHorizontal: Spacing.two,
+    paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     fontSize: 14,
+    minHeight: 40,
   },
   swatches: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.one,
-    marginTop: Spacing.one,
+    gap: Spacing.two,
+    marginTop: Spacing.two,
   },
   swatch: {
-    width: 24,
-    height: 24,
-    borderRadius: Spacing.one,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     borderWidth: 2,
   },
 });

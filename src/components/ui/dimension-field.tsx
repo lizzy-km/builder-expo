@@ -34,6 +34,7 @@ export function DimensionField({ label, value, onChange, placeholder = 'auto' }:
   return (
     <TextField
       label={label}
+      hint="px or %"
       value={draft}
       onChangeText={handleChange}
       placeholder={placeholder}

@@ -72,6 +72,24 @@ export function moveWithinParent(
   });
 }
 
+/** A block paired with its nesting depth, for indented list rendering. */
+export type FlatBlock = {
+  block: WidgetBlock;
+  depth: number;
+};
+
+/** Depth-first walk of the tree, so the Layers list mirrors canvas order. */
+export function flattenTree(
+  blocks: WidgetBlock[],
+  parentId: string | null = null,
+  depth = 0,
+): FlatBlock[] {
+  return childrenOf(blocks, parentId).flatMap((block) => [
+    { block, depth },
+    ...flattenTree(blocks, block.id, depth + 1),
+  ]);
+}
+
 /** True when `candidateParent` sits inside `id` — used to block invalid moves. */
 export function isDescendantOf(
   blocks: WidgetBlock[],

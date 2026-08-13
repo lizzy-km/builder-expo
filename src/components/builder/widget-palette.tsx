@@ -1,80 +1,93 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton } from '@/components/ui/app-button';
+import { PaletteTile } from '@/components/builder/palette-tile';
+import { PanelSection } from '@/components/builder/panel/panel-section';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { WIDGET_GROUPS } from '@/lib/widget-groups';
-import { WIDGET_LABELS } from '@/lib/widget-defaults';
+import { ADVANCED_WIDGET_GROUPS, WIDGET_GROUPS, type WidgetGroup } from '@/lib/widget-groups';
 import type { WidgetType } from '@/types/builder';
 
 export type WidgetPaletteProps = {
   onAdd: (type: WidgetType) => void;
   /** Name of the container new widgets land in, when one is selected. */
   targetLabel?: string;
+  /** True in the side panel, where the tray should use the full column height. */
+  fillHeight?: boolean;
 };
 
-/** Grouped, scrollable tray of widget types that can be added to the canvas. */
-export function WidgetPalette({ onAdd, targetLabel }: WidgetPaletteProps) {
-  const theme = useTheme();
-
+function TileGrid({ group, onAdd }: { group: WidgetGroup; onAdd: (type: WidgetType) => void }) {
   return (
-    <View style={[styles.tray, { backgroundColor: theme.backgroundElement }]}>
-      {targetLabel ? (
-        <Text style={[styles.target, { color: theme.textSecondary }]}>
-          Adding inside {targetLabel}
-        </Text>
-      ) : null}
-
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.groups}>
-        {WIDGET_GROUPS.map((group) => (
-          <View key={group.title} style={styles.group}>
-            <Text style={[styles.groupTitle, { color: theme.textSecondary }]}>{group.title}</Text>
-            <View style={styles.row}>
-              {group.types.map((type) => (
-                <AppButton
-                  key={type}
-                  label={WIDGET_LABELS[type]}
-                  variant="secondary"
-                  size="small"
-                  onPress={() => onAdd(type)}
-                />
-              ))}
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+    <View style={styles.grid}>
+      {group.types.map((type) => (
+        <PaletteTile key={type} type={type} onPress={() => onAdd(type)} />
+      ))}
     </View>
   );
 }
 
+/** Insert palette: labelled widget tiles, grouped, with advanced groups collapsed. */
+export function WidgetPalette({ onAdd, targetLabel, fillHeight = false }: WidgetPaletteProps) {
+  const theme = useTheme();
+
+  return (
+    <ScrollView
+      style={fillHeight ? styles.scrollFill : styles.scroll}
+      contentContainerStyle={styles.content}
+    >
+      <Text style={[styles.heading, { color: theme.text }]}>Insert Element</Text>
+
+      {targetLabel ? (
+        <Text style={[styles.target, { color: theme.primary }]}>Adding inside {targetLabel}</Text>
+      ) : null}
+
+      {WIDGET_GROUPS.map((group) => (
+        <View key={group.title} style={styles.group}>
+          <Text style={[styles.groupTitle, { color: theme.text }]}>{group.title}</Text>
+          <TileGrid group={group} onAdd={onAdd} />
+        </View>
+      ))}
+
+      <Text style={[styles.heading, { color: theme.text }]}>Advanced Widgets</Text>
+
+      {ADVANCED_WIDGET_GROUPS.map((group) => (
+        <PanelSection key={group.title} title={group.title} initiallyOpen={false}>
+          <TileGrid group={group} onAdd={onAdd} />
+        </PanelSection>
+      ))}
+    </ScrollView>
+  );
+}
+
 const styles = StyleSheet.create({
-  tray: {
-    maxHeight: 200,
-    paddingTop: Spacing.two,
+  scroll: {
+    flexGrow: 0,
+    maxHeight: 340,
+  },
+  scrollFill: {
+    flex: 1,
+  },
+  content: {
+    padding: Spacing.three,
+    paddingBottom: Spacing.five,
+    gap: Spacing.three,
+  },
+  heading: {
+    fontSize: 15,
+    fontWeight: '700',
   },
   target: {
     fontSize: 12,
     fontWeight: '600',
-    paddingHorizontal: Spacing.three,
-    paddingBottom: Spacing.one,
-  },
-  scroll: {
-    flexGrow: 0,
-  },
-  groups: {
-    paddingHorizontal: Spacing.three,
-    paddingBottom: Spacing.three,
-    gap: Spacing.three,
+    marginTop: -Spacing.two,
   },
   group: {
     gap: Spacing.two,
   },
   groupTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    textTransform: 'uppercase',
+    fontSize: 13,
+    fontWeight: '600',
   },
-  row: {
+  grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.two,

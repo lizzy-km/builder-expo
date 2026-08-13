@@ -9,49 +9,70 @@ export type PanelSectionProps = PropsWithChildren<{
   initiallyOpen?: boolean;
 }>;
 
-/** Collapsible group of related property fields. */
+/** Collapsible card grouping related property fields. */
 export function PanelSection({ title, initiallyOpen = true, children }: PanelSectionProps) {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(initiallyOpen);
 
   return (
-    <View style={[styles.section, { borderColor: theme.border }]}>
+    <View style={[styles.section, { backgroundColor: theme.background, borderColor: theme.border }]}>
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel={`${title} settings`}
         accessibilityState={{ expanded: isOpen }}
         onPress={() => setIsOpen((open) => !open)}
-        style={styles.header}
+        style={({ pressed }) => [styles.header, pressed && styles.pressed]}
       >
         <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
-        <Text style={[styles.chevron, { color: theme.textSecondary }]}>{isOpen ? '−' : '+'}</Text>
+        <View style={[styles.chevronBox, { backgroundColor: theme.backgroundElement }]}>
+          <Text style={[styles.chevron, { color: theme.textSecondary }]}>
+            {isOpen ? '▾' : '▸'}
+          </Text>
+        </View>
       </Pressable>
 
-      {isOpen && <View style={styles.body}>{children}</View>}
+      {isOpen ? (
+        <View style={[styles.body, { borderTopColor: theme.border }]}>{children}</View>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   section: {
-    borderTopWidth: 1,
-    paddingVertical: Spacing.two,
+    borderWidth: 1,
+    borderRadius: Spacing.three,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+  },
+  pressed: {
+    opacity: 0.6,
   },
   title: {
     fontSize: 14,
     fontWeight: '700',
   },
+  chevronBox: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   chevron: {
-    fontSize: 18,
+    fontSize: 11,
     fontWeight: '700',
   },
   body: {
-    gap: Spacing.three,
-    paddingTop: Spacing.two,
+    borderTopWidth: 1,
+    gap: Spacing.four,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
   },
 });

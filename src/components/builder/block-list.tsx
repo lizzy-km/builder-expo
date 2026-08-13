@@ -1,3 +1,4 @@
+import { StyleSheet } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { AnimatedBlock } from '@/components/builder/animated-block';
@@ -50,7 +51,7 @@ export function BlockList({
       onSelect={() => onSelect(block.id)}
       onDragEnd={(from, to) => onReorder(parentId, from, to)}
       onMeasure={onMeasure}
-      boxStyle={block.style}
+      boxStyle={[block.style, block.attributes?.hidden && styles.hidden]}
     >
       <AnimatedBlock animation={block.animation} replayKey={replayKey}>
         <WidgetBody block={block}>
@@ -71,3 +72,10 @@ export function BlockList({
     </DraggableBlock>
   ));
 }
+
+const styles = StyleSheet.create({
+  /** Hidden blocks stay on the canvas, dimmed, so they can be selected and un-hidden. */
+  hidden: {
+    opacity: 0.4,
+  },
+});
