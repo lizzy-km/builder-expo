@@ -1,0 +1,77 @@
+rules_version = '2';
+
+// Landing page builder access model:
+//   - Every page belongs to exactly one signed-in user (`ownerId`).
+//   - Only that owner may list, edit, or delete it.
+//   - A page the owner marks `published` can be fetched by id by anyone, which is what
+//     makes the /p/<id> share links work for visitors without an account.
+//   - Enumerating the collection is always owner-only, so published pages can be
+//     visited by link but not discovered by crawling.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /landingPages/{pageId} {
+
+      // The uid recorded on the stored document. Defaults to '' so pages written before
+      // `ownerId` existed simply match nobody, rather than erroring the condition.
+      function ownerOfExisting() {
+        return resource.data.get('ownerId', '');
+      }
+
+      // The uid recorded on the document being written.
+      function ownerOfIncoming() {
+        return request.resource.data.ownerId;
+      }
+
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      // Shape check: reject documents missing required fields or using wrong types,
+      // so a compromised client can't write junk that breaks every reader.
+      function hasValidShape() {
+        let data = request.resource.data;
+        return data.keys().hasAll(
+            ['title', 'blocks', 'ownerId', 'published', 'createdAt', 'updatedAt'])
+          && data.title is string
+          && data.title.size() > 0
+          && data.title.size() <= 200
+          && data.blocks is list
+          && data.blocks.size() <= 500
+          && data.ownerId is string
+          && data.published is bool
+          && data.createdAt is int
+          && data.updatedAt is int;
+      }
+
+      // `get()` with a default, so documents written before `published` existed read as
+      // unpublished instead of erroring out the whole condition.
+      function isPublished() {
+        return resource.data.get('published', false) == true;
+      }
+
+      // Owners always see their own pages; everyone else sees only published ones.
+      allow get: if (isSignedIn() && ownerOfExisting() == request.auth.uid) || isPublished();
+
+      // Listing is owner-only: without this, `list` would let anyone enumerate every
+      // published page in the project. Share links use `get` by id instead.
+      allow list: if isSignedIn() && ownerOfExisting() == request.auth.uid;
+
+      // On create the client must stamp its own uid — it cannot mint pages for others.
+      allow create: if isSignedIn()
+        && ownerOfIncoming() == request.auth.uid
+        && hasValidShape();
+
+      // On update the owner must match both before and after, so ownership can't be
+      // reassigned to or away from another user.
+      allow update: if isSignedIn()
+        && ownerOfExisting() == request.auth.uid
+        && ownerOfIncoming() == request.auth.uid
+        && hasValidShape();
+
+      allow delete: if isSignedIn() && ownerOfExisting() == request.auth.uid;
+    }
+
+    // Anything not matched above is denied by default.
+  }
+}
